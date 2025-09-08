@@ -9,7 +9,7 @@ A simple, user-friendly web application to calculate the expiration date of phon
 ## How to Use
 ### Accessing the Application
 You can use the Recharge Expire Date Calculator directly from GitHub Pages:
-1. Visit the deployed GitHub Pages link: `[Insert your GitHub Pages URL here, e.g., https://your-username.github.io/recharge-calculator/]`.
+1. Visit the deployed GitHub Pages link: `https://github.com/ExplorYou/Recharge-Expire-Date-Calculator.git`.
 2. Alternatively, clone or fork the repository and open `recharge_calculator.html` in a web browser.
 
 ### Features
