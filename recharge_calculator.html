@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recharge Expire Date Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        .light-mode {
+            background-color: #fff;
+            color: #000;
+        }
+        .toggle-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .mode-toggle {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            transition: background-color 0.3s;
+        }
+        .mode-toggle.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .mode-toggle:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+        .form-container {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .form-container.active {
+            display: block;
+        }
+        input, select, #import-file {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: none;
+        }
+        .history {
+            margin-top: 30px;
+        }
+        .history h3 {
+            margin-bottom: 10px;
+        }
+        .history-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            position: relative;
+        }
+        .dark-mode .history-item {
+            background-color: #444;
+            color: #fff;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .date-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .date-inputs input {
+            width: calc(33.33% - 10px);
+        }
+        .days-remaining {
+            font-weight: bold;
+        }
+        .days-low {
+            color: red;
+        }
+        .days-medium {
+            color: orange;
+        }
+        .days-high {
+            color: green;
+        }
+        .edit-btn, .delete-btn {
+            background-color: #28a745;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin: 2px;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .edit-btn:hover {
+            background-color: #218838;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .export-import {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    <h1>Recharge Expire Date Calculator</h1>
+    
+    <div class="toggle-container">
+        <div class="mode-toggle active" id="phone-toggle" onclick="selectMode('phone-toggle', 'phone')">Phone Recharge</div>
+        <div class="mode-toggle" id="wifi-toggle" onclick="selectMode('wifi-toggle', 'wifi')">WiFi Recharge</div>
+    </div>
+    
+    <!-- Phone Form -->
+    <div id="phone-form" class="form-container active">
+        <h2>Phone Recharge Calculator</h2>
+        <label for="phone-name">Name or Number:</label>
+        <input type="text" id="phone-name" placeholder="Enter name or phone number">
+        
+        <label>Recharge Date:</label>
+        <div class="date-inputs">
+            <input type="number" id="phone-day" placeholder="Day (1-31)" min="1" max="31">
+            <input type="number" id="phone-month" placeholder="Month (1-12)" min="1" max="12">
+            <input type="number" id="phone-year" placeholder="Year (e.g., 2025)" min="2020" max="2030">
+        </div>
+        
+        <label for="phone-validity">Validity (in days):</label>
+        <input type="number" id="phone-validity" placeholder="Enter validity days" min="1">
+        
+        <button onclick="calculateExpire('phone')">Calculate Expire Date</button>
+        
+        <div id="phone-result" class="result"></div>
+    </div>
+    
+    <!-- WiFi Form -->
+    <div id="wifi-form" class="form-container">
+        <h2>WiFi Recharge Calculator</h2>
+        <label for="wifi-name">Name or Number:</label>
+        <input type="text" id="wifi-name" placeholder="Enter name or WiFi ID/number">
+        
+        <label>Recharge Date:</label>
+        <div class="date-inputs">
+            <input type="number" id="wifi-day" placeholder="Day (1-31)" min="1" max="31">
+            <input type="number" id="wifi-month" placeholder="Month (1-12)" min="1" max="12">
+            <input type="number" id="wifi-year" placeholder="Year (e.g., 2025)" min="2020" max="2030">
+        </div>
+        
+        <label for="wifi-validity">Validity (in days):</label>
+        <input type="number" id="wifi-validity" placeholder="Enter validity days" min="1">
+        
+        <button onclick="calculateExpire('wifi')">Calculate Expire Date</button>
+        
+        <div id="wifi-result" class="result"></div>
+    </div>
+    
+    <!-- History Sections -->
+    <div id="phone-history" class="history" style="display: none;">
+        <h3>Phone Recharge History</h3>
+        <div id="phone-history-list"></div>
+    </div>
+    
+    <div id="wifi-history" class="history" style="display: none;">
+        <h3>WiFi Recharge History</h3>
+        <div id="wifi-history-list"></div>
+    </div>
+    
+    <div class="export-import">
+        <button onclick="exportHistory('phone')">Export Phone History</button>
+        <input type="file" id="phone-import-file" accept=".json" style="display: none;" onchange="importHistory('phone')">
+        <button onclick="document.getElementById('phone-import-file').click()">Import Phone History</button>
+        
+        <button onclick="exportHistory('wifi')">Export WiFi History</button>
+        <input type="file" id="wifi-import-file" accept=".json" style="display: none;" onchange="importHistory('wifi')">
+        <button onclick="document.getElementById('wifi-import-file').click()">Import WiFi History</button>
+    </div>
+    
+    <button onclick="showHistory('phone')" style="margin-top: 10px;">Show Phone History</button>
+    <button onclick="showHistory('wifi')">Show WiFi History</button>
+    <button onclick="clearHistory('phone')">Clear Phone History</button>
+    <button onclick="clearHistory('wifi')">Clear WiFi History</button>
+
+    <script>
+        let currentMode = 'phone';
+        let editingIndex = -1; // For tracking if editing and which index
+        
+        function selectMode(toggleId, mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-toggle').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(toggleId).classList.add('active');
+            
+            document.getElementById('phone-form').classList.toggle('active', mode === 'phone');
+            document.getElementById('wifi-form').classList.toggle('active', mode === 'wifi');
+            
+            showHistory(mode);
+        }
+        
+        function calculateDaysRemaining(expireDate) {
+            const today = new Date();
+            const diffTime = expireDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays >= 0 ? diffDays : 0;
+        }
+        
+        function getDaysRemainingClass(days) {
+            if (days <= 5) return 'days-low';
+            if (days <= 30) return 'days-medium';
+            return 'days-high';
+        }
+        
+        function populateForm(prefix, entry, index = -1) {
+            document.getElementById(prefix + '-name').value = entry.name;
+            const rechargeDate = new Date(entry.rechargeDate);
+            document.getElementById(prefix + '-day').value = rechargeDate.getDate();
+            document.getElementById(prefix + '-month').value = rechargeDate.getMonth() + 1;
+            document.getElementById(prefix + '-year').value = rechargeDate.getFullYear();
+            // For edit, we might want to set a new recharge date, so validity can be pre-filled or reset
+            document.getElementById(prefix + '-validity').value = entry.validity; // Or reset to empty for new recharge
+            editingIndex = index;
+            selectMode(currentMode === 'phone' ? 'phone-toggle' : 'wifi-toggle', currentMode);
+        }
+        
+        function calculateExpire(mode) {
+            const prefix = mode === 'phone' ? 'phone' : 'wifi';
+            const name = document.getElementById(prefix + '-name').value.trim();
+            const day = parseInt(document.getElementById(prefix + '-day').value) || 0;
+            const month = parseInt(document.getElementById(prefix + '-month').value) || 0;
+            const year = parseInt(document.getElementById(prefix + '-year').value) || 0;
+            const validity = parseInt(document.getElementById(prefix + '-validity').value) || 0;
+            
+            if (!name || day < 1 || day > 31 || month < 1 || month > 12 || isNaN(year) || validity < 1) {
+                alert('Please fill all fields correctly! Make sure day (1-31), month (1-12), year, and validity are valid numbers.');
+                return;
+            }
+            
+            const rechargeDate = new Date(year, month - 1, day);
+            if (isNaN(rechargeDate.getTime())) {
+                alert('Invalid date! Check day, month, year (e.g., not 31 Feb).');
+                return;
+            }
+            
+            const expireDate = new Date(rechargeDate);
+            expireDate.setDate(rechargeDate.getDate() + validity);
+            const daysRemaining = calculateDaysRemaining(expireDate);
+            
+            const resultDiv = document.getElementById(prefix + '-result');
+            resultDiv.innerHTML = `
+                <h3>Expire Date for ${name}:</h3>
+                <p>Recharge Date: ${rechargeDate.toDateString()}</p>
+                <p>Validity: ${validity} days</p>
+                <p><strong>Expire Date: ${expireDate.toDateString()}</strong></p>
+                <p class="days-remaining ${getDaysRemainingClass(daysRemaining)}">Days Remaining: ${daysRemaining}</p>
+                <button onclick="saveToHistory('${mode}', '${name}', '${rechargeDate.toDateString()}', ${validity}, '${expireDate.toDateString()}', ${daysRemaining})">Save to History</button>
+                ${editingIndex !== -1 ? `<button onclick="cancelEdit()">Cancel Edit</button>` : ''}
+            `;
+            resultDiv.style.display = 'block';
+            
+            // If editing, pre-show the result based on old data, but user can adjust
+        }
+        
+        function saveToHistory(mode, name, rechargeDate, validity, expireDateStr, daysRemaining) {
+            const historyKey = mode + '_history';
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            const expireDate = new Date(expireDateStr);
+            const entry = { name, rechargeDate, validity, expireDate, daysRemaining, timestamp: new Date().toISOString() };
+            
+            if (editingIndex !== -1) {
+                // Update existing entry
+                history[editingIndex] = entry;
+                alert('Updated history entry!');
+            } else {
+                // Add new entry
+                history.push(entry);
+                alert('Saved to history!');
+            }
+            
+            localStorage.setItem(historyKey, JSON.stringify(history));
+            editingIndex = -1;
+            showHistory(mode);
+            // Clear form
+            document.getElementById(prefix + '-name').value = '';
+            document.getElementById(prefix + '-day').value = '';
+            document.getElementById(prefix + '-month').value = '';
+            document.getElementById(prefix + '-year').value = '';
+            document.getElementById(prefix + '-validity').value = '';
+            document.getElementById(prefix + '-result').style.display = 'none';
+        }
+        
+        function editEntry(mode, index) {
+            const historyKey = mode + '_history';
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            const entry = history[index];
+            const prefix = mode;
+            populateForm(prefix, entry, index);
+            // Optionally auto-calculate with current values
+            setTimeout(() => calculateExpire(mode), 100);
+        }
+        
+        function deleteEntry(mode, index) {
+            const historyKey = mode + '_history';
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            history.splice(index, 1);
+            localStorage.setItem(historyKey, JSON.stringify(history));
+            showHistory(mode);
+            alert('Entry deleted!');
+        }
+        
+        function cancelEdit() {
+            editingIndex = -1;
+            // Clear result or something
+            document.querySelectorAll('.result').forEach(r => r.style.display = 'none');
+        }
+        
+        function showHistory(mode) {
+            const historyKey = mode + '_history';
+            const historyDiv = document.getElementById(mode + '-history');
+            const listDiv = document.getElementById(mode + '-history-list');
+            
+            document.querySelectorAll('.history').forEach(h => h.style.display = 'none');
+            
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Sort by latest
+            if (history.length === 0) {
+                listDiv.innerHTML = '<p>No history found.</p>';
+            } else {
+                listDiv.innerHTML = history.map((item, index) => {
+                    const expireDate = new Date(item.expireDate);
+                    const daysRemaining = calculateDaysRemaining(expireDate);
+                    return `
+                        <div class="history-item">
+                            <strong>${item.name}</strong><br>
+                            Recharge: ${item.rechargeDate}, Validity: ${item.validity} days<br>
+                            <strong>Expire: ${item.expireDate}</strong><br>
+                            <span class="days-remaining ${getDaysRemainingClass(daysRemaining)}">Days Remaining: ${daysRemaining}</span>
+                            <br>
+                            <button class="edit-btn" onclick="editEntry('${mode}', ${index})">Edit</button>
+                            <button class="delete-btn" onclick="deleteEntry('${mode}', ${index})">Delete</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+            historyDiv.style.display = 'block';
+        }
+        
+        function clearHistory(mode) {
+            const historyKey = mode + '_history';
+            if (confirm('Are you sure you want to clear history? This will delete all entries!')) {
+                localStorage.removeItem(historyKey);
+                showHistory(mode);
+                alert('History cleared!');
+            }
+        }
+        
+        function exportHistory(mode) {
+            const historyKey = mode + '_history';
+            const history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            const dataStr = JSON.stringify(history, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${mode}_history.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function importHistory(mode) {
+            const fileInput = document.getElementById(mode + '-import-file');
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const history = JSON.parse(e.target.result);
+                    const historyKey = mode + '_history';
+                    localStorage.setItem(historyKey, JSON.stringify(history));
+                    alert('History imported successfully!');
+                    showHistory(mode);
+                } catch (err) {
+                    alert('Invalid JSON file!');
+                }
+            };
+            reader.readAsText(file);
+            fileInput.value = ''; // Reset for next import
+        }
+        
+        function toggleTheme() {
+            const body = document.body;
+            const toggleBtn = document.querySelector('.theme-toggle');
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                toggleBtn.textContent = '☀️';
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                toggleBtn.textContent = '🌙';
+            }
+        }
+    </script>
+</body>
+</html>
